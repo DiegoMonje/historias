@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { BookOpen, FilePlus2, LayoutDashboard, Settings } from "lucide-react";
+import { BookOpen, FilePlus2, LayoutDashboard, LogOut, Settings } from "lucide-react";
+import { logoutAction } from "@/app/acceso/actions";
+import { BrandLogo } from "@/components/brand-logo";
 
 const navItems = [
   { href: "/admin", label: "Resumen", icon: LayoutDashboard },
@@ -12,11 +14,9 @@ export function AdminNav() {
   return (
     <aside className="admin-sidebar">
       <Link className="admin-brand" href="/admin">
-        <span className="brand__mark" aria-hidden="true">
-          <span />
-        </span>
+        <BrandLogo compact />
         <span>
-          HISTORIAS
+          FICCIÓN OCULTA
           <small>Panel editorial</small>
         </span>
       </Link>
@@ -32,9 +32,12 @@ export function AdminNav() {
         })}
       </nav>
       <div className="admin-sidebar__footer">
-        <span>Modo preparación</span>
-        <p>El guardado definitivo se activará al conectar Supabase.</p>
+        <span>Sesión protegida</span>
+        <p>Los cambios se guardan en Supabase con permisos exclusivos de administrador.</p>
         <Link href="/">Ver web pública</Link>
+        <form action={logoutAction}>
+          <button type="submit"><LogOut size={14} /> Cerrar sesión</button>
+        </form>
       </div>
     </aside>
   );

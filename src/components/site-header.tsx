@@ -1,15 +1,20 @@
 import Link from "next/link";
 import { BookOpenText, Search } from "lucide-react";
+import { BrandLogo } from "@/components/brand-logo";
+import { getPublicStories } from "@/lib/story-repository";
 
-export function SiteHeader() {
+export async function SiteHeader() {
+  const stories = await getPublicStories();
+  const featuredStory = stories.find((story) => story.featured) ?? stories[0];
+  const readingHref = featuredStory
+    ? `/historias/${featuredStory.slug}/capitulo/1`
+    : "/historias";
+
   return (
     <header className="site-header">
       <div className="site-header__inner">
-        <Link className="brand" href="/" aria-label="Historias, página de inicio">
-          <span className="brand__mark" aria-hidden="true">
-            <span />
-          </span>
-          <span>HISTORIAS</span>
+        <Link className="brand" href="/" aria-label="Ficción Oculta, página de inicio">
+          <BrandLogo />
         </Link>
 
         <nav className="main-nav" aria-label="Navegación principal">
@@ -22,7 +27,7 @@ export function SiteHeader() {
           <Link className="icon-link" href="/historias" aria-label="Buscar historias">
             <Search size={18} strokeWidth={1.8} />
           </Link>
-          <Link className="reading-link" href="/historias/la-estacion-de-las-317/capitulo/1">
+          <Link className="reading-link" href={readingHref}>
             <BookOpenText size={16} strokeWidth={1.8} />
             <span>Leer ahora</span>
           </Link>

@@ -80,7 +80,7 @@ export const stories: Story[] = [
     genres: ["Suspense", "Intriga"],
     status: "Completa",
     year: 2026,
-    author: "Historias",
+    author: "Ficción Oculta",
     totalReadingMinutes: stationReadingMinutes,
     featured: true,
     cover: {
@@ -101,7 +101,7 @@ export const stories: Story[] = [
     genres: ["Acción", "Ciencia ficción"],
     status: "En curso",
     year: 2026,
-    author: "Historias",
+    author: "Ficción Oculta",
     totalReadingMinutes: 136,
     cover: {
       variant: "grid",
@@ -124,7 +124,7 @@ export const stories: Story[] = [
     genres: ["Aventura", "Intriga"],
     status: "Completa",
     year: 2026,
-    author: "Historias",
+    author: "Ficción Oculta",
     totalReadingMinutes: 154,
     cover: {
       variant: "horizon",
@@ -147,7 +147,7 @@ export const stories: Story[] = [
     genres: ["Suspense", "Acción"],
     status: "Completa",
     year: 2026,
-    author: "Historias",
+    author: "Ficción Oculta",
     totalReadingMinutes: 141,
     cover: {
       variant: "depth",
@@ -170,7 +170,7 @@ export const stories: Story[] = [
     genres: ["Intriga", "Suspense"],
     status: "En curso",
     year: 2026,
-    author: "Historias",
+    author: "Ficción Oculta",
     totalReadingMinutes: 132,
     cover: {
       variant: "smoke",
@@ -193,7 +193,7 @@ export const stories: Story[] = [
     genres: ["Acción", "Intriga"],
     status: "Próximamente",
     year: 2026,
-    author: "Historias",
+    author: "Ficción Oculta",
     totalReadingMinutes: 145,
     cover: {
       variant: "eclipse",

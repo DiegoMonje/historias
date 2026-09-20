@@ -13,13 +13,28 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://historias-six.vercel.app"),
   title: {
-    default: "Historias — Suspense, intriga y aventura",
-    template: "%s · Historias",
+    default: "Ficción Oculta — Historias de suspense, intriga y aventura",
+    template: "%s · Ficción Oculta",
   },
   description:
     "Historias originales de suspense, intriga, aventura y acción para leer capítulo a capítulo.",
-  applicationName: "Historias",
+  applicationName: "Ficción Oculta",
+  openGraph: {
+    type: "website",
+    locale: "es_ES",
+    siteName: "Ficción Oculta",
+    title: "Ficción Oculta",
+    description:
+      "Historias originales de suspense, intriga, aventura y acción para leer capítulo a capítulo.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Ficción Oculta",
+    description:
+      "Historias originales de suspense, intriga, aventura y acción para leer capítulo a capítulo.",
+  },
   keywords: [
     "historias de suspense",
     "relatos de intriga",

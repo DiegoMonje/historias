@@ -1,14 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import {
-  CheckCircle2,
-  Eye,
-  FileText,
-  ImagePlus,
-  Save,
-  Sparkles,
-} from "lucide-react";
+import { useActionState, useState } from "react";
+import { CheckCircle2, FileText, ImagePlus, Save, Sparkles } from "lucide-react";
+import { createStoryAction } from "@/app/admin/actions";
+import { initialActionState } from "@/lib/action-state";
 
 function detectChapters(text: string) {
   const chunks = text
@@ -20,43 +15,32 @@ function detectChapters(text: string) {
     const [heading, ...body] = chunk.split("\n");
     return {
       number: index + 1,
-      title: heading.replace(/^\s*cap[ií]tulo\s+\d+\s*[:.-]?\s*/i, "") || `Capítulo ${index + 1}`,
+      title:
+        heading.replace(/^\s*cap[ií]tulo\s+\d+\s*[:.-]?\s*/i, "") ||
+        `Capítulo ${index + 1}`,
       words: body.join(" ").trim().split(/\s+/).filter(Boolean).length,
     };
   });
 }
 
 export function StoryEditor() {
-  const [title, setTitle] = useState("");
-  const [synopsis, setSynopsis] = useState("");
   const [bulkText, setBulkText] = useState("");
   const [chapters, setChapters] = useState<ReturnType<typeof detectChapters>>([]);
-  const [notice, setNotice] = useState("");
+  const [analysisNotice, setAnalysisNotice] = useState("");
+  const [state, formAction, pending] = useActionState(createStoryAction, initialActionState);
 
   function handleAnalyze() {
     const detected = detectChapters(bulkText);
     setChapters(detected);
-    setNotice(
+    setAnalysisNotice(
       detected.length > 0
         ? `Se han detectado ${detected.length} capítulos.`
         : "No se han encontrado encabezados del tipo «Capítulo 1».",
     );
   }
 
-  function handleSaveDraft() {
-    try {
-      window.localStorage.setItem(
-        "historias:v1:cms-local-draft",
-        JSON.stringify({ title, synopsis, bulkText, chapters, savedAt: new Date().toISOString() }),
-      );
-      setNotice("Borrador guardado en este navegador. Todavía no está publicado.");
-    } catch {
-      setNotice("El navegador ha bloqueado el guardado local. El contenido sigue en pantalla.");
-    }
-  }
-
   return (
-    <div className="editor-grid">
+    <form action={formAction} className="editor-grid">
       <section className="editor-main">
         <div className="editor-panel">
           <div className="editor-panel__heading">
@@ -70,15 +54,19 @@ export function StoryEditor() {
           <div className="form-grid">
             <label className="field field--wide">
               <span>Título</span>
-              <input
-                value={title}
-                onChange={(event) => setTitle(event.target.value)}
-                placeholder="Ej. La estación de las 3:17"
-              />
+              <input name="title" placeholder="Ej. La casa detrás del bosque" required />
+            </label>
+            <label className="field field--wide">
+              <span>Subtítulo o frase promocional</span>
+              <input name="tagline" placeholder="Una promesa breve y sugerente" />
+            </label>
+            <label className="field field--wide">
+              <span>Antetítulo</span>
+              <input name="eyebrow" placeholder="El misterio comienza aquí" />
             </label>
             <label className="field">
               <span>Género principal</span>
-              <select defaultValue="Suspense">
+              <select name="genre" defaultValue="Suspense">
                 <option>Suspense</option>
                 <option>Intriga</option>
                 <option>Aventura</option>
@@ -88,19 +76,20 @@ export function StoryEditor() {
             </label>
             <label className="field">
               <span>Estado</span>
-              <select defaultValue="Borrador">
+              <select name="status" defaultValue="Borrador">
                 <option>Borrador</option>
-                <option>En publicación</option>
+                <option>En curso</option>
+                <option>Próximamente</option>
                 <option>Completa</option>
               </select>
             </label>
             <label className="field field--wide">
               <span>Sinopsis</span>
               <textarea
+                name="synopsis"
                 rows={5}
-                value={synopsis}
-                onChange={(event) => setSynopsis(event.target.value)}
                 placeholder="Describe el punto de partida sin desvelar el desenlace."
+                required
               />
             </label>
           </div>
@@ -119,6 +108,7 @@ export function StoryEditor() {
             <span>Texto de la historia</span>
             <textarea
               className="story-import"
+              name="bulkText"
               rows={15}
               value={bulkText}
               onChange={(event) => setBulkText(event.target.value)}
@@ -131,6 +121,7 @@ export function StoryEditor() {
             </button>
             <span>{bulkText.length.toLocaleString("es-ES")} caracteres</span>
           </div>
+          {analysisNotice ? <p className="editor-notice">{analysisNotice}</p> : null}
         </div>
 
         {chapters.length > 0 ? (
@@ -160,38 +151,32 @@ export function StoryEditor() {
 
       <aside className="editor-aside">
         <div className="editor-panel editor-panel--sticky">
-          <span className="admin-kicker">Portada provisional</span>
-          <button className="cover-uploader" type="button">
+          <span className="admin-kicker">Publicación</span>
+          <div className="new-story-cover-note">
             <ImagePlus size={25} />
-            <strong>Añadir portada</strong>
-            <span>JPG, PNG o WEBP · proporción 2:3</span>
-          </button>
-          <div className="future-feature">
-            <Sparkles size={17} />
-            <div>
-              <strong>Generación con IA</strong>
-              <p>Este espacio queda preparado para generar la portada desde la sinopsis.</p>
-            </div>
+            <strong>Portada en el siguiente paso</strong>
+            <span>Al crear la historia podrás subir, sustituir o eliminar su portada.</span>
           </div>
           <div className="publish-summary">
             <div>
-              <span>Estado</span>
-              <strong>Borrador local</strong>
+              <span>Destino</span>
+              <strong>Supabase</strong>
             </div>
             <div>
               <span>Capítulos</span>
-              <strong>{chapters.length || 0}</strong>
+              <strong>{chapters.length}</strong>
             </div>
           </div>
-          <button className="button button--primary button--wide" type="button" onClick={handleSaveDraft}>
-            <Save size={17} /> Guardar borrador
+          <button className="button button--primary button--wide" type="submit" disabled={pending}>
+            <Save size={17} /> {pending ? "Creando…" : "Crear historia"}
           </button>
-          <button className="button button--ghost button--wide" type="button">
-            <Eye size={17} /> Vista previa
-          </button>
-          {notice ? <p className="editor-notice" role="status">{notice}</p> : null}
+          {state.message ? (
+            <p className={`form-notice form-notice--${state.status}`} role="alert">
+              {state.message}
+            </p>
+          ) : null}
         </div>
       </aside>
-    </div>
+    </form>
   );
 }

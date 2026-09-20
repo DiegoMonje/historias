@@ -4,10 +4,27 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { StoryCard } from "@/components/story-card";
 import { StoryPoster } from "@/components/story-poster";
-import { getFeaturedStory, stories } from "@/lib/stories";
+import { getPublicStories } from "@/lib/story-repository";
 
-export default function Home() {
-  const featuredStory = getFeaturedStory();
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const stories = await getPublicStories();
+  const featuredStory = stories.find((story) => story.featured) ?? stories[0];
+
+  if (!featuredStory) {
+    return (
+      <div className="public-site">
+        <SiteHeader />
+        <main className="empty-library-page page-shell">
+          <span className="section-kicker">Biblioteca en preparación</span>
+          <h1>Las historias están a punto de aparecer.</h1>
+          <p>Importa o publica el contenido desde el panel editorial.</p>
+        </main>
+        <SiteFooter />
+      </div>
+    );
+  }
 
   return (
     <div className="public-site">

@@ -5,7 +5,7 @@ export type StoryGenre =
   | "Acción"
   | "Ciencia ficción";
 
-export type StoryStatus = "Completa" | "En curso" | "Próximamente";
+export type StoryStatus = "Completa" | "En curso" | "Próximamente" | "Borrador";
 
 export type CoverVariant =
   | "signal"
@@ -26,6 +26,7 @@ export interface ChapterVisual {
 }
 
 export interface Chapter {
+  id?: string;
   number: number;
   title: string;
   readingMinutes: number;
@@ -34,6 +35,7 @@ export interface Chapter {
 }
 
 export interface Story {
+  id?: string;
   slug: string;
   title: string;
   eyebrow: string;
@@ -50,6 +52,9 @@ export interface Story {
     accent: string;
     ink: string;
     code: string;
+    url?: string | null;
+    alt?: string;
+    prompt?: string;
   };
   chapters: Chapter[];
 }

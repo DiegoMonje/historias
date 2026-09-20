@@ -1,0 +1,11 @@
+<svg width="360" height="96" viewBox="0 0 360 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Ficción Oculta</title>
+  <path d="M16 8H61L76 23V88H16V8Z" fill="#0B1115" stroke="#E8E4DA" stroke-width="2"/>
+  <path d="M61 8V25H76" stroke="#E8E4DA" stroke-width="2"/>
+  <path d="M31 31H60M31 46H52M31 46V68" stroke="#F1B75A" stroke-width="4" stroke-linecap="round"/>
+  <path d="M14 80L78 18" stroke="#0B1115" stroke-width="9"/>
+  <path d="M14 80L78 18" stroke="#F1B75A" stroke-width="2"/>
+  <circle cx="68" cy="75" r="4" fill="#F1B75A"/>
+  <text x="101" y="43" fill="#F4F0E7" font-family="Georgia, 'Times New Roman', serif" font-size="30" letter-spacing="5">FICCIÓN</text>
+  <text x="101" y="76" fill="#F1B75A" font-family="Arial, sans-serif" font-size="23" font-weight="700" letter-spacing="8">OCULTA</text>
+</svg>

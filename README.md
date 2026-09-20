@@ -1,41 +1,39 @@
-# Historias
+# Ficción Oculta
 
-Biblioteca editorial de relatos de suspense, intriga, aventura y acción construida con Next.js 16, React 19, TypeScript y Tailwind CSS.
+Plataforma editorial de historias originales de suspense, intriga, aventura y acción. Está construida con Next.js 16, React 19, TypeScript, Tailwind CSS y Supabase.
 
-## Estado actual
+## Funciones disponibles
 
-- Portada cinematográfica responsive.
-- Biblioteca con búsqueda y filtros por género.
-- Ficha individual con 20 capítulos por historia.
-- Lector con progreso, tres temas y tamaño de texto regulable.
-- Panel editorial y flujo de importación de historias completas.
-- Borradores locales de demostración.
-- Esquema de Supabase preparado en `supabase/schema.sql`.
-
-El contenido actual es demostrativo. El panel todavía no publica en la web: se conectará a Supabase Auth, Database y Storage en la siguiente fase.
+- Portada y biblioteca responsive con búsqueda y filtros.
+- Fichas de historia y lector por capítulos.
+- Seis historias iniciales con 20 capítulos cada una.
+- CMS privado en `/admin`, protegido con Supabase Auth y un permiso `is_admin` adicional.
+- Edición de títulos, frases promocionales, sinopsis, géneros, estados, historia destacada y capítulos.
+- Portadas JPG, PNG o WebP almacenadas en Supabase Storage, con vista previa, sustitución y eliminación segura.
+- Portadas gráficas locales como respaldo mientras no haya una imagen subida.
+- Lectura pública desde Supabase con respaldo local cuando Supabase no está configurado o no responde.
 
 ## Desarrollo
 
 ```bash
 npm install
+cp .env.example .env.local
 npm run dev
 ```
 
 La aplicación estará disponible en `http://localhost:3000`.
 
+## Configurar el CMS
+
+Sigue [supabase/SETUP.md](supabase/SETUP.md). No se necesita ni se debe exponer una clave `service_role`.
+
 ## Rutas principales
 
-- `/` — portada.
+- `/` — portada pública.
 - `/historias` — biblioteca.
-- `/historias/[slug]` — ficha de historia.
+- `/historias/[slug]` — ficha y capítulos.
 - `/historias/[slug]/capitulo/[chapter]` — lector.
-- `/admin` — panel editorial en preparación.
-- `/admin/historias/nueva` — importador de historias.
-
-## Próxima fase: Supabase
-
-1. Crear o vincular el proyecto de Supabase.
-2. Ejecutar `supabase/schema.sql`.
-3. Configurar las variables de `.env.example` en local y Vercel.
-4. Sustituir los datos demostrativos de `src/lib/stories.ts` por el repositorio de Supabase.
-5. Proteger `/admin` mediante Supabase Auth.
+- `/acceso` — inicio de sesión del administrador.
+- `/admin` — CMS editorial.
+- `/admin/historias/[slug]` — edición de historia y portada.
+- `/admin/historias/[slug]/capitulo/[chapter]` — edición de capítulo.

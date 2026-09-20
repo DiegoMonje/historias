@@ -1,16 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ChapterReader } from "@/components/chapter-reader";
-import { getChapter, getStory, stories } from "@/lib/stories";
+import { getChapter } from "@/lib/stories";
+import { getPublicStory } from "@/lib/story-repository";
 
-export function generateStaticParams() {
-  return stories.flatMap((story) =>
-    story.chapters.map((chapter) => ({
-      slug: story.slug,
-      chapter: String(chapter.number),
-    })),
-  );
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -18,7 +12,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string; chapter: string }>;
 }): Promise<Metadata> {
   const { slug, chapter: chapterParam } = await params;
-  const story = getStory(slug);
+  const story = await getPublicStory(slug);
   const chapter = story ? getChapter(story, Number(chapterParam)) : undefined;
 
   if (!story || !chapter) return {};
@@ -35,7 +29,7 @@ export default async function ChapterPage({
   params: Promise<{ slug: string; chapter: string }>;
 }) {
   const { slug, chapter: chapterParam } = await params;
-  const story = getStory(slug);
+  const story = await getPublicStory(slug);
   const chapterNumber = Number(chapterParam);
   const chapter = story ? getChapter(story, chapterNumber) : undefined;
 

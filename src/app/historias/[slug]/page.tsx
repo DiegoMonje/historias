@@ -11,11 +11,9 @@ import {
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { StoryPoster } from "@/components/story-poster";
-import { getStory, stories } from "@/lib/stories";
+import { getPublicStory } from "@/lib/story-repository";
 
-export function generateStaticParams() {
-  return stories.map((story) => ({ slug: story.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -23,7 +21,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const story = getStory(slug);
+  const story = await getPublicStory(slug);
 
   if (!story) return {};
 
@@ -39,7 +37,7 @@ export default async function StoryPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const story = getStory(slug);
+  const story = await getPublicStory(slug);
 
   if (!story) notFound();
 

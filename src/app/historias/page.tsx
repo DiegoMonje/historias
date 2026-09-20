@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { LibraryExplorer } from "@/components/library-explorer";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { stories } from "@/lib/stories";
+import { getPublicStories } from "@/lib/story-repository";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Biblioteca",
@@ -10,7 +12,9 @@ export const metadata: Metadata = {
     "Explora historias originales de suspense, intriga, aventura y acción.",
 };
 
-export default function StoriesPage() {
+export default async function StoriesPage() {
+  const stories = await getPublicStories();
+
   return (
     <div className="public-site">
       <SiteHeader />
