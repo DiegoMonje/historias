@@ -1,4 +1,8 @@
 import type { Chapter, Story } from "@/lib/types";
+import {
+  stationChapters,
+  stationReadingMinutes,
+} from "@/content/la-estacion-de-las-317";
 
 const sharedChapterTitles = [
   "La llamada",
@@ -23,48 +27,12 @@ const sharedChapterTitles = [
   "Después de todo",
 ];
 
-const stationTitles = [
-  "El último tren",
-  "Andén cero",
-  "El hombre del abrigo gris",
-  "Una voz en la megafonía",
-  "El reloj detenido",
-  "Billete de ida",
-  "La taquilla número trece",
-  "Nadie recuerda a Vera",
-  "El túnel clausurado",
-  "Las luces del norte",
-  "Un pasajero menos",
-  "La ciudad bajo las vías",
-  "El mapa de ceniza",
-  "Tres minutos de oscuridad",
-  "La mujer que esperaba",
-  "El maquinista",
-  "La estación despierta",
-  "La hora imposible",
-  "El tren de las 3:17",
-  "Donde terminan las vías",
-];
-
-const firstChapter = [
-  "A las tres y diecisiete de la madrugada, el panel de llegadas de la estación de Santa Lucía encendió una línea que llevaba veintidós años apagada. Vera Salvatierra estaba sola en el vestíbulo cuando las letras rojas comenzaron a formar un destino que no figuraba en ningún mapa.",
-  "No debía estar allí. Su turno había terminado cuarenta minutos antes, pero una llamada sin número la había retenido en la oficina de objetos perdidos. Al otro lado de la línea, una voz de mujer había pronunciado su nombre y una única frase: «Si el tren aparece, no dejes que abra las puertas».",
-  "Vera pensó en una broma hasta que escuchó el silbido. Llegó desde el túnel norte, el tramo cerrado desde el incendio de 2004. Primero fue un hilo de aire; después, un temblor que hizo vibrar los cristales de las taquillas.",
-  "En el panel, la nueva línea parpadeó una vez. TREN 317. PROCEDENCIA DESCONOCIDA. ANDÉN 0. No existía ningún andén cero, al menos no en los planos actuales.",
-  "Las luces del vestíbulo se apagaron por filas. Vera tomó la linterna de emergencia y corrió hacia el puesto de seguridad, pero las pantallas ya no mostraban las cámaras de la estación. En todas aparecía la misma imagen: un andén antiguo, cubierto de niebla, y una niña de espaldas junto al borde.",
-  "La niña se volvió lentamente hacia la cámara. Vera dejó caer la linterna. Llevaba el mismo abrigo amarillo que su hermana Lucía la noche en que desapareció.",
-];
-
 function buildChapterParagraphs(
   storyTitle: string,
   chapterTitle: string,
   number: number,
   opening: string,
 ) {
-  if (storyTitle === "La estación de las 3:17" && number === 1) {
-    return firstChapter;
-  }
-
   return [
     `${opening} El capítulo ${number} comenzó con una certeza incómoda: nada de lo descubierto hasta entonces había ocurrido por casualidad.`,
     `La pista conducía de nuevo al centro del misterio. Cada detalle de «${chapterTitle}» parecía preparado para obligarles a avanzar, incluso sabiendo que alguien observaba cada paso.`,
@@ -113,7 +81,7 @@ export const stories: Story[] = [
     status: "Completa",
     year: 2026,
     author: "Historias",
-    totalReadingMinutes: 148,
+    totalReadingMinutes: stationReadingMinutes,
     featured: true,
     cover: {
       variant: "signal",
@@ -121,11 +89,7 @@ export const stories: Story[] = [
       ink: "#071319",
       code: "03:17",
     },
-    chapters: makeChapters(
-      "La estación de las 3:17",
-      "La estación permanecía vacía, pero el eco de unos pasos avanzaba por el andén.",
-      stationTitles,
-    ),
+    chapters: stationChapters,
   },
   {
     slug: "proyecto-lazaro",
