@@ -198,7 +198,12 @@ export const getPublicStories = cache(async function getPublicStories() {
   if (!client) return localStories;
 
   try {
-    return await loadStories(client);
+    const databaseStories = await loadStories(client);
+
+    // Supabase puede estar conectado antes de que se hayan importado las
+    // historias nativas. Una base vacía nunca debe ocultar el contenido que ya
+    // existe en el proyecto, especialmente los 20 capítulos de la estación.
+    return databaseStories.length > 0 ? databaseStories : localStories;
   } catch (error) {
     console.error("No se pudieron cargar las historias desde Supabase.", error);
     return localStories;
