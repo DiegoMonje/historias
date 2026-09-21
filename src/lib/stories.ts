@@ -7,6 +7,10 @@ import {
   lazarusChapters,
   lazarusReadingMinutes,
 } from "@/content/proyecto-lazaro";
+import {
+  lighthouseChapters,
+  lighthouseReadingMinutes,
+} from "@/content/el-faro-sin-mapa";
 
 const sharedChapterTitles = [
   "La llamada",
@@ -126,17 +130,14 @@ export const stories: Story[] = [
     status: "Completa",
     year: 2026,
     author: "Ficción Oculta",
-    totalReadingMinutes: 154,
+    totalReadingMinutes: lighthouseReadingMinutes,
     cover: {
       variant: "horizon",
       accent: "#77c7bd",
       ink: "#061418",
       code: "N 36°",
     },
-    chapters: makeChapters(
-      "El faro sin mapa",
-      "El mar estaba en calma cuando una luz blanca cortó la niebla por primera vez.",
-    ),
+    chapters: lighthouseChapters,
   },
   {
     slug: "48-horas-bajo-tierra",
