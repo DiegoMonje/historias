@@ -6,7 +6,10 @@ import { redirect } from "next/navigation";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ActionState } from "@/lib/action-state";
 import { requireAdmin } from "@/lib/auth";
-import { isGeneratedPlaceholderContent } from "@/lib/native-story-content";
+import {
+  isGeneratedPlaceholderContent,
+  isKnownOutdatedNativeChapter,
+} from "@/lib/native-story-content";
 import { stories as nativeStories } from "@/lib/stories";
 import { toDatabaseStatus } from "@/lib/story-repository";
 import type { Story, StoryGenre, StoryStatus } from "@/lib/types";
@@ -133,7 +136,17 @@ async function importNativeStories(supabase: SupabaseClient) {
       const existingChapter = existingByNumber.get(chapter.number);
 
       if (existingChapter) {
-        if (!isGeneratedPlaceholderContent(story.title, existingChapter.content)) {
+        const isPlaceholder = isGeneratedPlaceholderContent(
+          story.title,
+          existingChapter.content,
+        );
+        const isOutdatedNativeChapter = isKnownOutdatedNativeChapter(
+          story.slug,
+          chapter.number,
+          existingChapter.content,
+        );
+
+        if (!isPlaceholder && !isOutdatedNativeChapter) {
           continue;
         }
 
@@ -150,28 +163,30 @@ async function importNativeStories(supabase: SupabaseClient) {
 
         if (updateChapterError) throw updateChapterError;
 
-        const { error: deleteMediaError } = await supabase
-          .from("chapter_media")
-          .delete()
-          .eq("chapter_id", existingChapter.id);
+        if (isPlaceholder) {
+          const { error: deleteMediaError } = await supabase
+            .from("chapter_media")
+            .delete()
+            .eq("chapter_id", existingChapter.id);
 
-        if (deleteMediaError) throw deleteMediaError;
+          if (deleteMediaError) throw deleteMediaError;
 
-        if (chapter.visuals.length > 0) {
-          const { error: mediaError } = await supabase.from("chapter_media").insert(
-            chapter.visuals.map((visual, index) => ({
-              chapter_id: existingChapter.id,
-              sort_order: index,
-              after_block: visual.afterParagraph,
-              image_url: visual.url ?? null,
-              alt_text: visual.alt,
-              generation_prompt: visual.prompt,
-              aspect_ratio: visual.aspectRatio,
-              status: visual.status,
-            })),
-          );
+          if (chapter.visuals.length > 0) {
+            const { error: mediaError } = await supabase.from("chapter_media").insert(
+              chapter.visuals.map((visual, index) => ({
+                chapter_id: existingChapter.id,
+                sort_order: index,
+                after_block: visual.afterParagraph,
+                image_url: visual.url ?? null,
+                alt_text: visual.alt,
+                generation_prompt: visual.prompt,
+                aspect_ratio: visual.aspectRatio,
+                status: visual.status,
+              })),
+            );
 
-          if (mediaError) throw mediaError;
+            if (mediaError) throw mediaError;
+          }
         }
 
         refreshedNativeContent = true;

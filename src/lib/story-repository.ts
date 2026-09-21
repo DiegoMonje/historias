@@ -2,7 +2,10 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { cache } from "react";
 import { createPublicSupabaseClient } from "@/lib/supabase/public";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { isGeneratedPlaceholderContent } from "@/lib/native-story-content";
+import {
+  isGeneratedPlaceholderContent,
+  isKnownOutdatedNativeChapter,
+} from "@/lib/native-story-content";
 import { getStory as getLocalStory, stories as localStories } from "@/lib/stories";
 import type {
   Chapter,
@@ -150,6 +153,17 @@ async function loadStories(client: SupabaseClient): Promise<Story[]> {
         const localChapter = fallback?.chapters.find(
           (candidate) => candidate.number === chapter.number,
         );
+        const databaseVisuals: ChapterVisual[] = mediaRows
+          .filter((media) => media.chapter_id === chapter.id && media.status !== "archived")
+          .map((media) => ({
+            id: media.id,
+            afterParagraph: media.after_block,
+            alt: media.alt_text,
+            prompt: media.generation_prompt ?? "",
+            aspectRatio: media.aspect_ratio,
+            status: media.status === "published" ? "published" : "pending",
+            url: media.image_url,
+          }));
 
         if (
           fallback &&
@@ -160,23 +174,21 @@ async function loadStories(client: SupabaseClient): Promise<Story[]> {
           return { ...localChapter, id: chapter.id };
         }
 
+        if (
+          localChapter &&
+          isKnownOutdatedNativeChapter(row.slug, chapter.number, chapter.content)
+        ) {
+          usedNativeContent = true;
+          return { ...localChapter, id: chapter.id, visuals: databaseVisuals };
+        }
+
         return {
           id: chapter.id,
           number: chapter.number,
           title: chapter.title,
           readingMinutes: chapter.reading_minutes,
           paragraphs: asParagraphs(chapter.content),
-          visuals: mediaRows
-          .filter((media) => media.chapter_id === chapter.id && media.status !== "archived")
-          .map((media) => ({
-            id: media.id,
-            afterParagraph: media.after_block,
-            alt: media.alt_text,
-            prompt: media.generation_prompt ?? "",
-            aspectRatio: media.aspect_ratio,
-            status: media.status === "published" ? "published" : "pending",
-            url: media.image_url,
-          })),
+          visuals: databaseVisuals,
         };
       });
 
