@@ -52,8 +52,14 @@ export default async function AdminPage() {
         </div>
       ) : (
         <div className="setup-banner setup-banner--success">
-          <span>Supabase conectado</span>
-          <p>Las seis historias nativas ya se pueden editar desde este panel.</p>
+          <div>
+            <span>Supabase conectado</span>
+            <p>
+              Las seis historias nativas se pueden editar desde este panel. La sincronización
+              completa capítulos pendientes sin reemplazar tus ediciones.
+            </p>
+          </div>
+          <ImportStoriesButton label="Sincronizar contenido nativo" />
         </div>
       )}
 

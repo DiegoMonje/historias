@@ -5,7 +5,11 @@ import { DatabaseZap } from "lucide-react";
 import { importNativeStoriesAction } from "@/app/admin/actions";
 import { initialActionState } from "@/lib/action-state";
 
-export function ImportStoriesButton() {
+export function ImportStoriesButton({
+  label = "Importar las seis historias",
+}: {
+  label?: string;
+}) {
   const [state, formAction, pending] = useActionState(
     importNativeStoriesAction,
     initialActionState,
@@ -15,7 +19,7 @@ export function ImportStoriesButton() {
     <form action={formAction} className="import-stories">
       <button className="button button--admin" type="submit" disabled={pending}>
         <DatabaseZap size={17} />
-        {pending ? "Importando…" : "Importar las seis historias"}
+        {pending ? "Sincronizando…" : label}
       </button>
       {state.message ? (
         <p className={`form-notice form-notice--${state.status}`} role="status">

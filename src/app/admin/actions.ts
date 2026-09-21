@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ActionState } from "@/lib/action-state";
 import { requireAdmin } from "@/lib/auth";
+import { isGeneratedPlaceholderContent } from "@/lib/native-story-content";
 import { stories as nativeStories } from "@/lib/stories";
 import { toDatabaseStatus } from "@/lib/story-repository";
 import type { Story, StoryGenre, StoryStatus } from "@/lib/types";
@@ -119,14 +120,63 @@ async function importNativeStories(supabase: SupabaseClient) {
 
     const { data: existingChapters, error: chapterLookupError } = await supabase
       .from("chapters")
-      .select("number")
+      .select("id, number, content")
       .eq("story_id", storyId);
 
     if (chapterLookupError) throw chapterLookupError;
-    const existingNumbers = new Set((existingChapters ?? []).map((chapter) => chapter.number));
+    const existingByNumber = new Map(
+      (existingChapters ?? []).map((chapter) => [chapter.number, chapter]),
+    );
+    let refreshedNativeContent = false;
 
     for (const chapter of story.chapters) {
-      if (existingNumbers.has(chapter.number)) continue;
+      const existingChapter = existingByNumber.get(chapter.number);
+
+      if (existingChapter) {
+        if (!isGeneratedPlaceholderContent(story.title, existingChapter.content)) {
+          continue;
+        }
+
+        const { error: updateChapterError } = await supabase
+          .from("chapters")
+          .update({
+            title: chapter.title,
+            content: chapter.paragraphs,
+            reading_minutes: chapter.readingMinutes,
+            status: toDatabaseStatus(story.status),
+            published_at: publishedAtFor(story.status),
+          })
+          .eq("id", existingChapter.id);
+
+        if (updateChapterError) throw updateChapterError;
+
+        const { error: deleteMediaError } = await supabase
+          .from("chapter_media")
+          .delete()
+          .eq("chapter_id", existingChapter.id);
+
+        if (deleteMediaError) throw deleteMediaError;
+
+        if (chapter.visuals.length > 0) {
+          const { error: mediaError } = await supabase.from("chapter_media").insert(
+            chapter.visuals.map((visual, index) => ({
+              chapter_id: existingChapter.id,
+              sort_order: index,
+              after_block: visual.afterParagraph,
+              image_url: visual.url ?? null,
+              alt_text: visual.alt,
+              generation_prompt: visual.prompt,
+              aspect_ratio: visual.aspectRatio,
+              status: visual.status,
+            })),
+          );
+
+          if (mediaError) throw mediaError;
+        }
+
+        refreshedNativeContent = true;
+        continue;
+      }
 
       const { data: insertedChapter, error: chapterError } = await supabase
         .from("chapters")
@@ -161,6 +211,19 @@ async function importNativeStories(supabase: SupabaseClient) {
         if (mediaError) throw mediaError;
       }
     }
+
+    if (refreshedNativeContent) {
+      const { error: storyUpdateError } = await supabase
+        .from("stories")
+        .update({
+          status: toDatabaseStatus(story.status),
+          total_reading_minutes: story.totalReadingMinutes,
+          published_at: publishedAtFor(story.status),
+        })
+        .eq("id", storyId);
+
+      if (storyUpdateError) throw storyUpdateError;
+    }
   }
 }
 
@@ -177,7 +240,7 @@ export async function importNativeStoriesAction(
     revalidatePath("/", "layout");
     return {
       status: "success",
-      message: "Las seis historias y sus capítulos ya están disponibles en el CMS.",
+      message: "Las historias nativas y sus capítulos ya están sincronizados con el CMS.",
     };
   } catch (error) {
     console.error("Error al importar las historias nativas.", error);

@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { cache } from "react";
 import { createPublicSupabaseClient } from "@/lib/supabase/public";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { isGeneratedPlaceholderContent } from "@/lib/native-story-content";
 import { getStory as getLocalStory, stories as localStories } from "@/lib/stories";
 import type {
   Chapter,
@@ -142,15 +143,30 @@ async function loadStories(client: SupabaseClient): Promise<Story[]> {
 
   return storyRows.map((row) => {
     const fallback = getLocalStory(row.slug);
+    let usedNativeContent = false;
     const chapters: Chapter[] = chapterRows
       .filter((chapter) => chapter.story_id === row.id)
-      .map((chapter) => ({
-        id: chapter.id,
-        number: chapter.number,
-        title: chapter.title,
-        readingMinutes: chapter.reading_minutes,
-        paragraphs: asParagraphs(chapter.content),
-        visuals: mediaRows
+      .map((chapter) => {
+        const localChapter = fallback?.chapters.find(
+          (candidate) => candidate.number === chapter.number,
+        );
+
+        if (
+          fallback &&
+          localChapter &&
+          isGeneratedPlaceholderContent(fallback.title, chapter.content)
+        ) {
+          usedNativeContent = true;
+          return { ...localChapter, id: chapter.id };
+        }
+
+        return {
+          id: chapter.id,
+          number: chapter.number,
+          title: chapter.title,
+          readingMinutes: chapter.reading_minutes,
+          paragraphs: asParagraphs(chapter.content),
+          visuals: mediaRows
           .filter((media) => media.chapter_id === chapter.id && media.status !== "archived")
           .map((media) => ({
             id: media.id,
@@ -161,7 +177,8 @@ async function loadStories(client: SupabaseClient): Promise<Story[]> {
             status: media.status === "published" ? "published" : "pending",
             url: media.image_url,
           })),
-      }));
+        };
+      });
 
     return {
       id: row.id,
@@ -174,10 +191,13 @@ async function loadStories(client: SupabaseClient): Promise<Story[]> {
         .filter((genre) => genre.story_id === row.id)
         .map(genreName)
         .filter((genre): genre is StoryGenre => Boolean(genre)),
-      status: fromDatabaseStatus(row.status),
+      status: usedNativeContent && fallback ? fallback.status : fromDatabaseStatus(row.status),
       year: row.year,
       author: row.author,
-      totalReadingMinutes: row.total_reading_minutes,
+      totalReadingMinutes:
+        usedNativeContent && fallback
+          ? fallback.totalReadingMinutes
+          : row.total_reading_minutes,
       featured: row.featured,
       cover: {
         variant: row.cover_variant ?? fallback?.cover.variant ?? "signal",

@@ -3,6 +3,10 @@ import {
   stationChapters,
   stationReadingMinutes,
 } from "@/content/la-estacion-de-las-317";
+import {
+  lazarusChapters,
+  lazarusReadingMinutes,
+} from "@/content/proyecto-lazaro";
 
 const sharedChapterTitles = [
   "La llamada",
@@ -99,20 +103,17 @@ export const stories: Story[] = [
     synopsis:
       "Un agente dado por muerto despierta sin recuerdos en una instalación evacuada. Para salir deberá descubrir por qué todos los archivos llevan su firma.",
     genres: ["Acción", "Ciencia ficción"],
-    status: "En curso",
+    status: "Completa",
     year: 2026,
     author: "Ficción Oculta",
-    totalReadingMinutes: 136,
+    totalReadingMinutes: lazarusReadingMinutes,
     cover: {
       variant: "grid",
       accent: "#ff5f52",
       ink: "#160809",
       code: "LZ-04",
     },
-    chapters: makeChapters(
-      "Proyecto Lázaro",
-      "Las alarmas llevaban horas sonando cuando Elías abrió los ojos dentro de la cámara.",
-    ),
+    chapters: lazarusChapters,
   },
   {
     slug: "el-faro-sin-mapa",
