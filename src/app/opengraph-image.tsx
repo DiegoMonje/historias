@@ -15,18 +15,27 @@ export default function OpenGraphImage() {
           alignItems: "center",
           justifyContent: "space-between",
           padding: "78px 92px",
-          color: "#f2efe8",
+          color: "#eee7db",
           background:
-            "radial-gradient(circle at 78% 20%, rgba(241,183,90,.18), transparent 28%), #07090b",
+            "radial-gradient(circle at 78% 20%, rgba(142,29,42,.2), transparent 30%), #07090b",
         }}
       >
         <div style={{ display: "flex", flexDirection: "column", width: 720 }}>
-          <div style={{ color: "#f1b75a", fontSize: 22, letterSpacing: 8 }}>
+          <div style={{ color: "#aaa9a5", fontSize: 22, letterSpacing: 8 }}>
             HISTORIAS ORIGINALES
           </div>
-          <div style={{ display: "flex", flexDirection: "column", marginTop: 28 }}>
-            <span style={{ fontFamily: "serif", fontSize: 102, lineHeight: 0.9 }}>Ficción</span>
-            <span style={{ fontFamily: "serif", fontSize: 102, lineHeight: 0.9 }}>Oculta</span>
+          <div style={{ display: "flex", alignItems: "center", marginTop: 38 }}>
+            <span style={{ fontSize: 72, fontWeight: 800, letterSpacing: 5 }}>FICCIÓN</span>
+            <span
+              style={{
+                width: 9,
+                height: 104,
+                margin: "0 22px",
+                background: "#8e1b2a",
+                transform: "rotate(4deg)",
+              }}
+            />
+            <span style={{ fontSize: 72, fontWeight: 800, letterSpacing: 5 }}>OCULTA</span>
           </div>
           <div style={{ marginTop: 34, color: "#aaa9a5", fontSize: 26 }}>
             Suspense · Intriga · Aventura · Acción
@@ -34,18 +43,35 @@ export default function OpenGraphImage() {
         </div>
         <div
           style={{
-            width: 255,
-            height: 360,
+            width: 270,
+            height: 270,
             display: "flex",
             position: "relative",
-            border: "2px solid #e8e4da",
-            background: "#0b1115",
+            alignItems: "center",
+            justifyContent: "center",
+            border: "2px solid rgba(238,231,219,.28)",
+            borderRadius: 48,
+            background: "#111317",
           }}
         >
-          <div style={{ position: "absolute", top: 76, left: 55, width: 132, height: 5, background: "#f1b75a" }} />
-          <div style={{ position: "absolute", top: 124, left: 55, width: 96, height: 5, background: "#f1b75a" }} />
-          <div style={{ position: "absolute", top: 124, left: 55, width: 5, height: 104, background: "#f1b75a" }} />
-          <div style={{ position: "absolute", right: 34, bottom: 32, width: 12, height: 12, borderRadius: 99, background: "#f1b75a" }} />
+          <span style={{ marginRight: -4, fontSize: 166, fontWeight: 800, lineHeight: 1 }}>F</span>
+          <span
+            style={{
+              width: 92,
+              height: 144,
+              border: "11px solid #eee7db",
+              borderRadius: 80,
+            }}
+          />
+          <span
+            style={{
+              position: "absolute",
+              width: 12,
+              height: 198,
+              background: "#8e1b2a",
+              transform: "rotate(3deg)",
+            }}
+          />
         </div>
       </div>
     ),
