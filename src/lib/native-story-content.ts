@@ -1,19 +1,40 @@
 import { createHash } from "node:crypto";
 
-const OUTDATED_NATIVE_CHAPTER_HASHES: Record<string, string> = {
+const OUTDATED_NATIVE_CHAPTER_HASHES: Record<string, string | string[]> = {
   "la-estacion-de-las-317:3": "50ce3ee31f0c78fca0a3d62709190740f12b65eb813fe0a6b504af59c9bd724c",
   "la-estacion-de-las-317:4": "3c6ad7fe535e913b2c1efc79fc6c6cdbc8275c26b0a8661b8588bcf94fe4faf7",
   "la-estacion-de-las-317:5": "056388d870846de393f38c1c978a3913e1eaab6dff75024f16b4f5dc23ce2e82",
-  "la-estacion-de-las-317:6": "eda2742eae80537b78dcbe373b21b9324fad3b21e16fd8a257008e29d1d260ad",
-  "la-estacion-de-las-317:7": "c761d8dc05f82ea0f372bef0f202eabef2725d97fb1abc68675b6ebca51434f5",
+  "la-estacion-de-las-317:6": [
+    "eda2742eae80537b78dcbe373b21b9324fad3b21e16fd8a257008e29d1d260ad",
+    "c27ea97d3af19adfc1fddeb6fe31b8a78920883351003d4eafd7ccf1bc346341",
+  ],
+  "la-estacion-de-las-317:7": [
+    "c761d8dc05f82ea0f372bef0f202eabef2725d97fb1abc68675b6ebca51434f5",
+    "f8414622efbc4c5986688b580382856a6a70a182e71aa1fdd3bf99db7c551b06",
+  ],
   "la-estacion-de-las-317:10": "40582a79116b76e58e7723f7ae67fa98208e409eeccc9566467033d821df1521",
   "la-estacion-de-las-317:11": "4f78ff20679eb174b1348f3203ef0806671447a728bec3d039c595179f6dd0bf",
-  "la-estacion-de-las-317:12": "30986d7f6cf6fc60b90fa61f1e5c52590747e78c2a0ab804799a50f7cc7ba593",
+  "la-estacion-de-las-317:12": [
+    "30986d7f6cf6fc60b90fa61f1e5c52590747e78c2a0ab804799a50f7cc7ba593",
+    "4931faa567019d21debc464df78e280ad7a448fc5f521fe3021d5a18697b6569",
+  ],
   "la-estacion-de-las-317:13": "7338cd12e6179ffaf56106d9319c08f4a8da1e77e10d40b2d26ec3e7ab78cd3c",
-  "la-estacion-de-las-317:14": "33462e4792ecf92ed92d31ae3aeaf67a2e9adf82b83ba2aeff9b0d584b731f70",
-  "la-estacion-de-las-317:15": "ea5bc89d2814395ab1b8ec6eba8f8c47bb5b440eb98b0a4985cbfa045c050f54",
-  "la-estacion-de-las-317:17": "8b7c1fed4198eb354e66ffcea539afce965aef787fb0f13eb57afc7e43a8d1ec",
-  "la-estacion-de-las-317:18": "08ae67671a8a3da7e607c0327d086fe931b96c0ee50e88235209072f721e0196",
+  "la-estacion-de-las-317:14": [
+    "33462e4792ecf92ed92d31ae3aeaf67a2e9adf82b83ba2aeff9b0d584b731f70",
+    "f9628b94cc6ddda9b33f4396f34bfb12612ef91b3cca3fbff0f970784a41e67a",
+  ],
+  "la-estacion-de-las-317:15": [
+    "ea5bc89d2814395ab1b8ec6eba8f8c47bb5b440eb98b0a4985cbfa045c050f54",
+    "d7e55bd0904220d9659c2adc8e90066bc485c3f1ff14ce23ad221a7604ff3668",
+  ],
+  "la-estacion-de-las-317:17": [
+    "8b7c1fed4198eb354e66ffcea539afce965aef787fb0f13eb57afc7e43a8d1ec",
+    "27f008372a106d6146e6d2af38471ec04c531bf1acbda5683d180c33d0f41350",
+  ],
+  "la-estacion-de-las-317:18": [
+    "08ae67671a8a3da7e607c0327d086fe931b96c0ee50e88235209072f721e0196",
+    "ccafc2fe70b646e72eb8dd6a00aeb552a2d986d5e4b38cf5cd551534153f6385",
+  ],
   "la-estacion-de-las-317:19": "ee1e19258b9d8964b89273a5809b17401493ba01ce93d8b249a97176d19a5270",
   "proyecto-lazaro:2": "5627f15ea7756ede721dfd252b9d03178be7c0cb59cb808387169ce02795819d",
   "proyecto-lazaro:3": "4aab753f16ce195ed85d9d7f99d1d365001184a29bf1373950b5b827c3b45401",
@@ -44,8 +65,14 @@ export function isKnownOutdatedNativeChapter(
   chapterNumber: number,
   content: unknown,
 ) {
-  const expectedHash = OUTDATED_NATIVE_CHAPTER_HASHES[`${storySlug}:${chapterNumber}`];
-  return Boolean(expectedHash && nativeContentHash(content) === expectedHash);
+  const expectedHashes = OUTDATED_NATIVE_CHAPTER_HASHES[`${storySlug}:${chapterNumber}`];
+  const contentHash = nativeContentHash(content);
+
+  if (!expectedHashes || !contentHash) return false;
+
+  return Array.isArray(expectedHashes)
+    ? expectedHashes.includes(contentHash)
+    : expectedHashes === contentHash;
 }
 
 export function isGeneratedPlaceholderContent(
